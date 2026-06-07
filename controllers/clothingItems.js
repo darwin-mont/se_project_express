@@ -29,9 +29,9 @@ const getItem = (req, res) => {
 };
 
 const createItem = (req, res) => {
-  const { name, avatar } = req.body;
+  const { name, weather, imageUrl, owner } = req.body;
 
-  ClothingItem.create({ name, avatar })
+  ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => res.status(201).send({ data: item })) // Fixed: removed braces and return
     .catch((err) => {
       if (err.name === "ValidationError") {
@@ -44,7 +44,7 @@ const createItem = (req, res) => {
       }
       return res
         .status(500)
-        .send({ message: "create User Failed", error: err });
+        .send({ message: "create Item Failed", error: err });
     });
 };
 
@@ -66,13 +66,44 @@ const deleteItem = (req, res) => {
     });
 };
 
-// likeItem and unlikeItem functions would be implemented here
 const likeItem = (req, res) => {
-  // Implementation for liking an item
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $addToSet: { likes: req.user.id } }, // Add user ID to likes array
+    { new: true } // Return the updated document
+  )
+    .then((item) => {
+      if (!item) {
+        return res.status(404).send({ message: "Item not found" });
+      }
+      return res.status(200).send({ data: item });
+    })
+    .catch((err) => {
+      if (err.name === "CastError") {
+        return res.status(400).send({ message: "Invalid item ID format" });
+      }
+      return res.status(500).send({ message: "Like failed", error: err });
+    });
 };
 
 const unlikeItem = (req, res) => {
-  // Implementation for unliking an item
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $pull: { likes: req.user.id } }, // Remove user ID from likes array
+    { new: true } // Return the updated document
+  )
+    .then((item) => {
+      if (!item) {
+        return res.status(404).send({ message: "Item not found" });
+      }
+      return res.status(200).send({ data: item });
+    })
+    .catch((err) => {
+      if (err.name === "CastError") {
+        return res.status(400).send({ message: "Invalid item ID format" });
+      }
+      return res.status(500).send({ message: "Unlike failed", error: err });
+    });
 };
 
 module.exports = {
