@@ -1,0 +1,14 @@
+$kind: http-request
+name: CREATE / Item
+url: localhost:3001/items
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "name": "Cozy Sweater",
+        "weather": "warm",
+        "imageUrl": "https://images.unsplash.com/photo-1576566588028-4147f3842f27",
+        "owner": "6a258ed88d6744f6aa8f8216"
+    }
+order: 2989289476041978

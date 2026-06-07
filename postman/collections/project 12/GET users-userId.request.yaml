@@ -1,0 +1,5 @@
+$kind: http-request
+name: GET users/:userId
+url: localhost:3001/users/6a258d108d6744f6aa8f820a
+method: GET
+order: 215460842566829

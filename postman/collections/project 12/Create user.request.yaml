@@ -1,0 +1,12 @@
+$kind: http-request
+name: Create user
+url: localhost:3001/users
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "name": "John g",
+      "avatar": "https://images.unsplash.com/photo-123456789.jpg"
+    }
+order: 1034334134651359

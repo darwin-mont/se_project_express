@@ -2,18 +2,18 @@ const ClothingItem = require("../models/clothingItem");
 
 // the getItems request handler
 const getItems = (req, res) => {
-  ClothingItem.findById(req.params.itemId)
+  ClothingItem.find(req.params.itemId)
     .then((item) => res.status(200).send({ data: item }))
     .catch((error) => {
       console.error(`Error with item ${req.params.itemId}:`, error);
     });
 };
 
-// the createItem request handler
+// the createItem request handler - FIXED VERSION
 const createItem = (req, res) => {
-  const { name, imageUrl } = req.body;
+  const { name, imageUrl, weather, owner } = req.body; // ← ADDED weather and owner
 
-  ClothingItem.create({ name, imageUrl })
+  ClothingItem.create({ name, imageUrl, weather, owner }) // ← ADDED weather and owner
     .then((item) => res.status(201).send({ data: item }))
     .catch((error) =>
       res.status(500).send({ message: "create Item Failed", error })

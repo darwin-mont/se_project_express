@@ -1,0 +1,8 @@
+$kind: http-request
+name: GET / Items
+url: http://localhost:3001/items
+method: GET
+body:
+  type: json
+  content: ""
+order: 1467172844605447

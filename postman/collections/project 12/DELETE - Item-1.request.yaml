@@ -1,0 +1,5 @@
+$kind: http-request
+name: DELETE / Item
+url: http://localhost:3001/items/
+method: DELETE
+order: 3194615837792673
