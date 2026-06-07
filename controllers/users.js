@@ -4,26 +4,37 @@ const User = require("../models/user");
 
 const getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.send({ users }))
-    .catch((err) => res.status(500).send({ message: "Error" }));
+    .then((users) => res.status(200).send({ users }))
+    .catch((err) =>
+      res.status(500).send({ message: "get Users Failed", error: err })
+    );
 };
-
 // the getUser request handler
 
 const getUser = (req, res) => {
-  User.findById(req.params.id)
-    .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: "Error" }));
+  User.findById(req.params.userId)
+    .then((user) => res.status(200).send({ data: user }))
+    .catch((err) =>
+      res.status(500).send({ message: "get User Failed", error: err })
+    );
 };
 
 // the createUser request handler
 
 const createUser = (req, res) => {
+  console.log(req);
+  console.log(req.body);
   const { name, avatar } = req.body;
 
   User.create({ name, avatar })
-    .then((user) => res.send({ user }))
-    .catch((err) => res.status(500).send({ message: "Error" }));
+    .then((user) => {
+      console.log(user);
+      res.status(201).send({ data: user });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send({ message: "create User Failed", error: err });
+    });
 };
 
 module.exports = { getUsers, getUser, createUser };
