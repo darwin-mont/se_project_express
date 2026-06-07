@@ -31,10 +31,11 @@ const getItem = (req, res) => {
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
 
-  const owner = req.user.id; // Get owner ID from authenticated user
+  // Get owner from authenticated user (NOT from request body)
+  const owner = req.user.id; //
 
   ClothingItem.create({ name, weather, imageUrl, owner })
-    .then((item) => res.status(201).send({ data: item })) // Fixed: removed braces and return
+    .then((item) => res.status(201).send({ data: item }))
     .catch((err) => {
       if (err.name === "ValidationError") {
         return res.status(400).send({ message: err.message });
