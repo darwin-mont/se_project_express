@@ -16,7 +16,7 @@ app.use(express.json());
 
 app.use((req, res, next) => {
   req.user = {
-    _id: "6a25cdc3950261fd613d38c5", // Use a valid user ID from your database
+    _id: "6a25eb0eb4e9d2d9f5c51e64", // Use a valid user ID from your database
   };
   next();
 });

@@ -28,11 +28,15 @@ const getItem = (req, res) => {
     });
 };
 
+// module.exports.createClothingItem = (req, res) => {
+//   console.log(req.user._id); // _id will become accessible
+// };
+
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
 
   // Get owner from authenticated user (NOT from request body)
-  const owner = req.user.id; //
+  const owner = req.user._id; //
 
   ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => res.status(201).send({ data: item }))
@@ -72,7 +76,7 @@ const deleteItem = (req, res) => {
 const likeItem = (req, res) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
-    { $addToSet: { likes: req.user.id } }, // Add user ID to likes array
+    { $addToSet: { likes: req.user._id } }, // Add user ID to likes array
     { new: true } // Return the updated document
   )
     .then((item) => {
