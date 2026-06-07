@@ -1,18 +1,16 @@
-const { SOME_ERROR_CODE } = require("../utils/errors");
+const User = require("../models/user");
 
 const createUser = (req, res) => {
   User.create(req.body)
     .then((user) => res.status(201).send(user))
     .catch((err) => {
-      console.error(err);
+      // console.error(err); // Remove or comment out
+
       if (err.name === "SomeErrorName") {
-        return res
-          .status(SOME_ERROR_CODE)
-          .send({ message: "Appropriate error message" });
-      } else {
-        // if no errors match, return a response with status code 500
-        return res.status(500).send({ message: "Internal server error" });
+        return res.status(400).send({ message: "Appropriate error message" });
       }
+      // if no errors match, return a response with status code 500
+      return res.status(500).send({ message: "Internal server error" });
     });
 };
 
