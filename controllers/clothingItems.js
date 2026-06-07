@@ -29,7 +29,9 @@ const getItem = (req, res) => {
 };
 
 const createItem = (req, res) => {
-  const { name, weather, imageUrl, owner } = req.body;
+  const { name, weather, imageUrl } = req.body;
+
+  const owner = req.user.id; // Get owner ID from authenticated user
 
   ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => res.status(201).send({ data: item })) // Fixed: removed braces and return
