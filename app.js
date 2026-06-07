@@ -14,7 +14,6 @@ mongoose
 // Middleware
 app.use(express.json());
 
-// Add this middleware BEFORE your routes
 app.use((req, res, next) => {
   req.user = {
     _id: "6a258ed88d6744f6aa8f8216", // Use a valid user ID from your database
