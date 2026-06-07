@@ -14,14 +14,6 @@ mongoose
 // Middleware
 app.use(express.json());
 
-// Auth middleware (if needed for your routes)
-app.use((req, res, next) => {
-  req.user = {
-    _id: "5d8b8592978f8bd833ca8133",
-  };
-  next();
-});
-
 // Add this middleware BEFORE your routes
 app.use((req, res, next) => {
   req.user = {
@@ -32,10 +24,6 @@ app.use((req, res, next) => {
 
 // Routes - ONLY use mainRouter
 app.use("/", mainRouter);
-
-// Remove these lines if they exist:
-// const routes = require("./routes");
-// app.use(routes);
 
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
