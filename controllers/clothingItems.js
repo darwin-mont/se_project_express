@@ -1,38 +1,38 @@
-const User = require("../models/user");
+const ClothingItem = require("../models/clothingItem");
 
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.status(200).send({ users })) // Fixed: removed braces and return
+const getItems = (req, res) => {
+  ClothingItem.find({})
+    .then((items) => res.status(200).send({ items })) // Fixed: removed braces and return
     .catch((err) =>
-      res.status(500).send({ message: "get Users Failed", error: err })
+      res.status(500).send({ message: "get Items Failed", error: err })
     ); // Fixed: removed braces and return
 };
 
-const getUser = (req, res) => {
-  User.findById(req.params.userId)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: "User not found" });
+const getItem = (req, res) => {
+  ClothingItem.findById(req.params.itemId)
+    .then((item) => {
+      if (!item) {
+        return res.status(404).send({ message: "Item not found" });
       }
-      return res.status(200).send({ data: user });
+      return res.status(200).send({ data: item });
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        return res.status(400).send({ message: "Invalid user ID format" });
+        return res.status(400).send({ message: "Invalid item ID format" });
       }
       if (err.name === "ValidationError") {
         // Added this check to fix consistent-return
-        return res.status(500).send({ message: "get User Failed", error: err });
+        return res.status(500).send({ message: "get Item Failed", error: err });
       }
-      return res.status(500).send({ message: "get User Failed", error: err });
+      return res.status(500).send({ message: "get Item Failed", error: err });
     });
 };
 
-const createUser = (req, res) => {
+const createItem = (req, res) => {
   const { name, avatar } = req.body;
 
-  User.create({ name, avatar })
-    .then((user) => res.status(201).send({ data: user })) // Fixed: removed braces and return
+  ClothingItem.create({ name, avatar })
+    .then((item) => res.status(201).send({ data: item })) // Fixed: removed braces and return
     .catch((err) => {
       if (err.name === "ValidationError") {
         return res.status(400).send({ message: err.message });
@@ -40,7 +40,7 @@ const createUser = (req, res) => {
       if (err.code === 11000) {
         return res
           .status(409)
-          .send({ message: "User with this name already exists" });
+          .send({ message: "Item with this name already exists" });
       }
       return res
         .status(500)
@@ -48,4 +48,38 @@ const createUser = (req, res) => {
     });
 };
 
-module.exports = { getUsers, getUser, createUser };
+const deleteItem = (req, res) => {
+  ClothingItem.findByIdAndDelete(req.params.itemId)
+    .then((item) => {
+      if (!item) {
+        return res.status(404).send({ message: "Item not found" });
+      }
+      return res.status(200).send({ data: item });
+    })
+    .catch((err) => {
+      if (err.name === "CastError") {
+        return res.status(400).send({ message: "Invalid item ID format" });
+      }
+      return res
+        .status(500)
+        .send({ message: "delete Item Failed", error: err });
+    });
+};
+
+// likeItem and unlikeItem functions would be implemented here
+const likeItem = (req, res) => {
+  // Implementation for liking an item
+};
+
+const unlikeItem = (req, res) => {
+  // Implementation for unliking an item
+};
+
+module.exports = {
+  getItems,
+  getItem,
+  createItem,
+  deleteItem,
+  likeItem,
+  unlikeItem,
+};
