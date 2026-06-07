@@ -1,32 +1,51 @@
-const ClothingItem = require("../models/clothingItem");
+const User = require("../models/user");
 
-// the getItems request handler
-const getItems = (req, res) => {
-  ClothingItem.find(req.params.itemId)
-    .then((item) => res.status(200).send({ data: item }))
-    .catch((error) => {
-      console.error(`Error with item ${req.params.itemId}:`, error);
+const getUsers = (req, res) => {
+  User.find({})
+    .then((users) => res.status(200).send({ users })) // Fixed: removed braces and return
+    .catch((err) =>
+      res.status(500).send({ message: "get Users Failed", error: err })
+    ); // Fixed: removed braces and return
+};
+
+const getUser = (req, res) => {
+  User.findById(req.params.userId)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: "User not found" });
+      }
+      return res.status(200).send({ data: user });
+    })
+    .catch((err) => {
+      if (err.name === "CastError") {
+        return res.status(400).send({ message: "Invalid user ID format" });
+      }
+      if (err.name === "ValidationError") {
+        // Added this check to fix consistent-return
+        return res.status(500).send({ message: "get User Failed", error: err });
+      }
+      return res.status(500).send({ message: "get User Failed", error: err });
     });
 };
 
-// the createItem request handler - FIXED VERSION
-const createItem = (req, res) => {
-  const { name, imageUrl, weather, owner } = req.body; // ← ADDED weather and owner
+const createUser = (req, res) => {
+  const { name, avatar } = req.body;
 
-  ClothingItem.create({ name, imageUrl, weather, owner }) // ← ADDED weather and owner
-    .then((item) => res.status(201).send({ data: item }))
-    .catch((error) =>
-      res.status(500).send({ message: "create Item Failed", error })
-    );
+  User.create({ name, avatar })
+    .then((user) => res.status(201).send({ data: user })) // Fixed: removed braces and return
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        return res.status(400).send({ message: err.message });
+      }
+      if (err.code === 11000) {
+        return res
+          .status(409)
+          .send({ message: "User with this name already exists" });
+      }
+      return res
+        .status(500)
+        .send({ message: "create User Failed", error: err });
+    });
 };
 
-// the deleteItem request handler
-const deleteItem = (req, res) => {
-  ClothingItem.findByIdAndDelete(req.params.itemId)
-    .then(() => res.status(200).send({ message: "Item deleted successfully" }))
-    .catch((error) =>
-      res.status(500).send({ message: "delete Item Failed", error })
-    );
-};
-
-module.exports = { getItems, createItem, deleteItem };
+module.exports = { getUsers, getUser, createUser };
