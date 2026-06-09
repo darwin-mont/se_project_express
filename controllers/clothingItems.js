@@ -3,9 +3,9 @@ const ClothingItem = require("../models/clothingItem");
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send({ items })) // Fixed: removed braces and return
-    .catch((err) => {
-      return res.status(500).send({ message: "get Items Failed", error: err });
-    });
+    .catch((err) =>
+      res.status(500).send({ message: "get Items Failed", error: err })
+    );
 };
 
 const getItem = (req, res) => {
