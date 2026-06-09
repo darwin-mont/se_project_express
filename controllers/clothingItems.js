@@ -3,13 +3,13 @@ const ClothingItem = require("../models/clothingItem");
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send({ items })) // Fixed: removed braces and return
-    .catch((err) =>
-      res.status(500).send({ message: "get Items Failed", error: err })
-    ); // Fixed: removed braces and return
+    .catch((err) => {
+      return res.status(500).send({ message: "get Items Failed", error: err });
+    });
 };
 
 const getItem = (req, res) => {
-  ClothingItem.findById(req.params.itemId)
+  ClothingItem.find(req.params)
     .then((item) => {
       if (!item) {
         return res.status(404).send({ message: "Item not found" });
@@ -50,7 +50,7 @@ const createItem = (req, res) => {
           .send({ message: "Item with this name already exists" });
       }
       return res
-        .status(500)
+        .status(400)
         .send({ message: "create Item Failed", error: err });
     });
 };
@@ -96,7 +96,7 @@ const likeItem = (req, res) => {
 const unlikeItem = (req, res) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
-    { $pull: { likes: req.user.id } }, // Remove user ID from likes array
+    { $pull: { likes: req.user._id } }, // Remove user ID from likes array
     { new: true } // Return the updated document
   )
     .then((item) => {

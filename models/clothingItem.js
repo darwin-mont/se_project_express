@@ -25,13 +25,14 @@ const clothingItem = new mongoose.Schema({
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "users",
+    ref: "user",
     required: true,
   },
   likes: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
+      ref: "user",
+      default: [],
     },
   ],
   createdAt: {
@@ -40,4 +41,4 @@ const clothingItem = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("clothingItems", clothingItem);
+module.exports = mongoose.model("clothingItem", clothingItem);
