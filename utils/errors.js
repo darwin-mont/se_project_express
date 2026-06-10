@@ -1,17 +1,16 @@
-const User = require("../models/user");
+// utils/errors.js - HTTP Status Code Constants
+const BAD_REQUEST_STATUS_CODE = 400;
+const UNAUTHORIZED_STATUS_CODE = 401;
+const FORBIDDEN_STATUS_CODE = 403;
+const NOT_FOUND_STATUS_CODE = 404;
+const CONFLICT_STATUS_CODE = 409;
+const INTERNAL_SERVER_ERROR_STATUS_CODE = 500;
 
-const createUser = (req, res) => {
-  User.create(req.body)
-    .then((user) => res.status(201).send(user))
-    .catch((err) => {
-      // console.error(err); // Remove or comment out
-
-      if (err.name === "SomeErrorName") {
-        return res.status(400).send({ message: "Appropriate error message" });
-      }
-      // if no errors match, return a response with status code 500
-      return res.status(500).send({ message: "Internal server error" });
-    });
+module.exports = {
+  BAD_REQUEST_STATUS_CODE,
+  UNAUTHORIZED_STATUS_CODE,
+  FORBIDDEN_STATUS_CODE,
+  NOT_FOUND_STATUS_CODE,
+  CONFLICT_STATUS_CODE,
+  INTERNAL_SERVER_ERROR_STATUS_CODE,
 };
-
-exports.createUser = createUser;
