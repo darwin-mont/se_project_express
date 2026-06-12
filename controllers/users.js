@@ -7,7 +7,6 @@ const {
   INTERNAL_SERVER_ERROR_STATUS_CODE,
   BAD_REQUEST_STATUS_CODE,
   CONFLICT_STATUS_CODE,
-  UNAUTHORIZED_STATUS_CODE,
 } = require("../utils/errors");
 
 const logIn = (req, res) => {
@@ -22,7 +21,7 @@ const logIn = (req, res) => {
     })
     .catch((err) =>
       res
-        .status(UNAUTHORIZED_STATUS_CODE)
+        .status(BAD_REQUEST_STATUS_CODE)
         .send({ message: err.message || "incorrect email or password" })
     );
 };
@@ -36,7 +35,14 @@ const createUser = (req, res) => {
   }
 
   return User.create({ email, password, name, avatar })
-    .then((user) => res.status(201).send({ data: user }))
+    .then((user) =>
+      res.status(201).send({
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar,
+      })
+    )
     .catch((err) => {
       if (err.code === 11000) {
         return res
