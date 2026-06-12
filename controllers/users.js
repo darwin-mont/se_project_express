@@ -13,54 +13,44 @@ const {
 const logIn = (req, res) => {
   const { email, password } = req.body;
 
-  User.findUserByCredentials(email, password)
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        return res
-          .status(UNAUTHORIZED_STATUS_CODE)
-          .send({ message: "User not found" });
-      }
-      if (user.password !== password) {
-        return res
-          .status(UNAUTHORIZED_STATUS_CODE)
-          .send({ message: "Invalid password" });
-      }
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
       return res.status(200).send({ data: user, token });
     })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: "Invalid user ID format" });
-      }
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "login Failed" });
-    });
+    .catch((err) =>
+      res
+        .status(UNAUTHORIZED_STATUS_CODE)
+        .send({ message: err.message || "incorrect email or password" })
+    );
 };
 
 const createUser = (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, name, avatar } = req.body;
+  if (!email || !password || !name || !avatar) {
+    return res
+      .status(BAD_REQUEST_STATUS_CODE)
+      .send({ message: "All fields are required" });
+  }
 
-  User.create({ email, password })
+  return User.create({ email, password, name, avatar })
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: err.message });
-      }
       if (err.code === 11000) {
         return res
           .status(CONFLICT_STATUS_CODE)
           .send({ message: "User with this email already exists" });
       }
+      if (err.name === "ValidationError") {
+        return res
+          .status(BAD_REQUEST_STATUS_CODE)
+          .send({ message: err.message });
+      }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "create User Failed", error: err });
+        .send({ message: "create User Failed", error: err.message });
     });
 };
 
@@ -82,7 +72,7 @@ const getCurrentUser = (req, res) => {
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "get User Failed", error: err });
+        .send({ message: "get User Failed", error: err.message });
     });
 };
 
@@ -105,7 +95,7 @@ const updateProfile = (req, res) => {
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "update Profile Failed", error: err });
+        .send({ message: "update Profile Failed", error: err.message });
     });
 };
 
