@@ -11,6 +11,11 @@ const {
 
 const logIn = (req, res) => {
   const { email, password } = req.body;
+  if (!email || !password) {
+    return res
+      .status(BAD_REQUEST_STATUS_CODE)
+      .send({ message: "Email and password are required" });
+  }
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -22,7 +27,7 @@ const logIn = (req, res) => {
     .catch((err) =>
       res
         .status(BAD_REQUEST_STATUS_CODE)
-        .send({ message: err.message || "incorrect email or password" })
+        .send({ message: err.message || "Incorrect email or password" })
     );
 };
 
