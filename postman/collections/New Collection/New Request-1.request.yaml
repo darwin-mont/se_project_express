@@ -1,0 +1,5 @@
+$kind: http-request
+name: New Request
+url: localhost:3001/items
+method: GET
+order: 2000

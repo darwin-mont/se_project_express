@@ -1,8 +1,17 @@
 const router = require("express").Router();
-const { getUsers, getUser, createUser } = require("../controllers/users");
+const {
+  createUser,
+  logIn,
+  getCurrentUser,
+  updateProfile,
+} = require("../controllers/users");
 
-router.get("/", getUsers);
-router.get("/:userId", getUser);
-router.post("/", createUser);
+// Public routes
+router.post("/signup", createUser);
+router.post("/signin", logIn);
+
+// Protected routes (requires authentication)
+router.get("/me", getCurrentUser);
+router.patch("/me", updateProfile);
 
 module.exports = router;

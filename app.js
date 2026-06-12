@@ -1,6 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 const mainRouter = require("./routes/index");
+const { createUser, logIn } = require("./controllers/users");
+const auth = require("./middlewares/auth");
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -11,15 +14,15 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB error:", err));
 
-// Middleware
-app.use(express.json());
+app.post("/signin", logIn);
+app.post("/signup", createUser);
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "6a25eb0eb4e9d2d9f5c51e64", // Use a valid user ID from your database
-  };
-  next();
-});
+app.use(cors());
+
+// Middleware
+
+app.use(express.json());
+app.use(auth);
 
 // Routes - ONLY use mainRouter
 app.use("/", mainRouter);

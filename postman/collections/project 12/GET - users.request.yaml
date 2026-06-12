@@ -2,4 +2,7 @@ $kind: http-request
 name: GET / users
 url: localhost:3001/users
 method: GET
+body:
+  type: json
+  content: ""
 order: 1780847255487

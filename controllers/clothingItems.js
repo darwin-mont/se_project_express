@@ -69,7 +69,7 @@ const createItem = (req, res) => {
 };
 
 const deleteItem = (req, res) => {
-  ClothingItem.findByIdAndDelete(req.params.itemId)
+  ClothingItem.findByIdAndDelete(req.user.itemId)
     .then((item) => {
       if (!item) {
         return res
