@@ -14,13 +14,12 @@ const userSchema = new mongoose.Schema({
       message: "You must enter a valid email",
     },
   },
-
   password: {
     type: String,
     required: true,
-    minlength: 6,
     select: false,
   },
+
   name: {
     type: String,
     required: true,
@@ -31,9 +30,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
     validate: {
-      validator(value) {
-        return validator.isURL(value);
-      },
+      validator: (value) => !value || validator.isURL(value),
       message: "You must enter a valid URL for the avatar",
     },
   },

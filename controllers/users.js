@@ -7,6 +7,7 @@ const {
   INTERNAL_SERVER_ERROR_STATUS_CODE,
   BAD_REQUEST_STATUS_CODE,
   CONFLICT_STATUS_CODE,
+  UNAUTHORIZED_STATUS_CODE,
 } = require("../utils/errors");
 
 const logIn = (req, res) => {
@@ -22,18 +23,36 @@ const logIn = (req, res) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      return res.status(200).send({ data: user, token });
+      return res.status(200).send({
+        data: {
+          _id: user._id,
+          email: user.email,
+          name: user.name,
+          avatar: user.avatar,
+        },
+        token,
+      });
     })
-    .catch((err) =>
-      res
-        .status(BAD_REQUEST_STATUS_CODE)
-        .send({ message: err.message || "Incorrect email or password" })
-    );
+    .catch((err) => {
+      if (err.message === "Incorrect email or password") {
+        return res
+          .status(UNAUTHORIZED_STATUS_CODE)
+          .send({ message: err.message });
+      }
+      if (err.name === "CastError") {
+        return res
+          .status(BAD_REQUEST_STATUS_CODE)
+          .send({ message: "Invalid user ID format" });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
+        .send({ message: "Login Failed", error: err.message });
+    });
 };
 
 const createUser = (req, res) => {
   const { email, password, name, avatar } = req.body;
-  if (!email || !password || !name || !avatar) {
+  if (!email || !password || !name) {
     return res
       .status(BAD_REQUEST_STATUS_CODE)
       .send({ message: "All fields are required" });
@@ -49,6 +68,7 @@ const createUser = (req, res) => {
       })
     )
     .catch((err) => {
+      console.log("error in create user", err.code, err.name, err.message);
       if (err.code === 11000) {
         return res
           .status(CONFLICT_STATUS_CODE)
