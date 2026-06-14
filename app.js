@@ -1,14 +1,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const usersRouter = require("./routes/users");
 const clothingItemsRouter = require("./routes/clothingItems");
-const auth = require("./middlewares/auth");
-
 const {
-  NOT_FOUND_STATUS_CODE,
-  INTERNAL_SERVER_ERROR_STATUS_CODE,
-} = require("./utils/errors");
+  createUser,
+  logIn,
+  getCurrentUser,
+  updateProfile,
+} = require("./controllers/users");
+
+const auth = require("./middlewares/auth");
 
 const { PORT = 3001 } = process.env;
 
@@ -25,28 +26,30 @@ mongoose
   .catch((err) => console.error("MongoDB error:", err));
 
 // PUBLIC ROUTES (no authentication)
-app.use("/signup", usersRouter);
-app.use("/signin", usersRouter);
+app.post("/signin", logIn);
+app.post("/signup", createUser);
 
-// PROTECTED ROUTES (authentication required)
+// PROTECTED ROUTES - AUTH MIDDLEWARE MUST COME BEFORE THESE
 app.use(auth);
-app.use("/users", usersRouter); // This will handle /users/me and /users/me/profile
-app.use("/items", clothingItemsRouter); // This will handle /items, /items/:id, etc.
+
+// User routes (protected)
+app.get("/me", getCurrentUser);
+app.patch("/me", updateProfile);
+
+// Items routes (protected)
+app.use("/items", clothingItemsRouter);
 
 // 404 handler
 app.use((req, res) => {
-  res.status(NOT_FOUND_STATUS_CODE).send({ message: "Route not found" });
+  res.status(404).send({ message: "Route not found" });
 });
 
 // Global error handler
 app.use((err, req, res) => {
   console.error(err);
-  const { statusCode = INTERNAL_SERVER_ERROR_STATUS_CODE, message } = err;
+  const { statusCode = 500, message } = err;
   res.status(statusCode).send({
-    message:
-      statusCode === INTERNAL_SERVER_ERROR_STATUS_CODE
-        ? "An error occurred on the server"
-        : message,
+    message: statusCode === 500 ? "An error occurred on the server" : message,
   });
 });
 
