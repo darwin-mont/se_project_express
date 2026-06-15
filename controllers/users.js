@@ -24,7 +24,7 @@ const logIn = (req, res) => {
         expiresIn: "7d",
       });
       return res.status(200).send({
-        token: token,
+        token,
         data: {
           _id: user._id,
           email: user.email,
