@@ -55,7 +55,7 @@ const createUser = (req, res) => {
   if (!email || !password || !name) {
     return res
       .status(BAD_REQUEST_STATUS_CODE)
-      .send({ message: "All fields are required" });
+      .send({ message: "Email, password, and name are required" });
   }
 
   return User.create({ email, password, name, avatar })
@@ -93,7 +93,12 @@ const getCurrentUser = (req, res) => {
           .status(NOT_FOUND_STATUS_CODE)
           .send({ message: "User not found" });
       }
-      return res.status(200).send({ data: user });
+      return res.status(200).send({
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar,
+      });
     })
     .catch((err) => {
       if (err.name === "CastError") {
@@ -108,21 +113,35 @@ const getCurrentUser = (req, res) => {
 };
 
 const updateProfile = (req, res) => {
-  const { name, avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, avatar }, { new: true })
+  const { name, avatar, email, password } = req.body;
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name, avatar, email, password },
+    { new: true }
+  )
     .then((user) => {
       if (!user) {
         return res
           .status(NOT_FOUND_STATUS_CODE)
           .send({ message: "User not found" });
       }
-      return res.status(200).send({ data: user });
+      return res.status(200).send({
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar,
+      });
     })
     .catch((err) => {
       if (err.name === "CastError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
           .send({ message: "Invalid user ID format" });
+      }
+      if (err.name === "ValidationError") {
+        return res
+          .status(BAD_REQUEST_STATUS_CODE)
+          .send({ message: err.message });
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)

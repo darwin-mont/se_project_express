@@ -25,6 +25,14 @@ const createItem = (req, res) => {
   ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => res.status(201).send({ data: item }))
     .catch((err) => {
+      if (
+        err.name === "ValidationError" &&
+        err.errors?.name?.kind === "minlength"
+      ) {
+        return res
+          .status(BAD_REQUEST_STATUS_CODE)
+          .send({ message: err.errors.name.message });
+      }
       if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)

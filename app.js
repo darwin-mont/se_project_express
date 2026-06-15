@@ -35,8 +35,6 @@ app.use(auth);
 // User routes (protected)
 app.get("/me", getCurrentUser);
 app.patch("/me", updateProfile);
-
-// Items routes (protected)
 app.use("/items", clothingItemsRouter);
 
 // 404 handler
