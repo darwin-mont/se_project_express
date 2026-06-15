@@ -33,9 +33,9 @@ app.post("/signup", createUser);
 app.use(auth);
 
 // User routes (protected)
+app.use("/items", clothingItemsRouter);
 app.get("/me", getCurrentUser);
 app.patch("/me", updateProfile);
-app.use("/items", clothingItemsRouter);
 
 // 404 handler
 app.use((req, res) => {

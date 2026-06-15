@@ -24,13 +24,13 @@ const logIn = (req, res) => {
         expiresIn: "7d",
       });
       return res.status(200).send({
+        token: token,
         data: {
           _id: user._id,
           email: user.email,
           name: user.name,
           avatar: user.avatar,
         },
-        token,
       });
     })
     .catch((err) => {
