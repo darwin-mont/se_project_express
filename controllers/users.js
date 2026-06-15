@@ -68,7 +68,6 @@ const createUser = (req, res) => {
       })
     )
     .catch((err) => {
-      console.log("error in create user", err.code, err.name, err.message);
       if (err.code === 11000) {
         return res
           .status(CONFLICT_STATUS_CODE)
@@ -113,11 +112,17 @@ const getCurrentUser = (req, res) => {
 };
 
 const updateProfile = (req, res) => {
-  const { name, avatar, email, password } = req.body;
+  const { name, avatar } = req.body;
+
+  if (!name && !avatar) {
+    return res
+      .status(BAD_REQUEST_STATUS_CODE)
+      .send({ message: "At least one field (name or avatar) is required" });
+  }
   User.findByIdAndUpdate(
     req.user._id,
-    { name, avatar, email, password },
-    { new: true }
+    { name, avatar },
+    { new: true, runValidators: true }
   )
     .then((user) => {
       if (!user) {
@@ -147,6 +152,7 @@ const updateProfile = (req, res) => {
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
         .send({ message: "update Profile Failed", error: err.message });
     });
+  return res.status(200).send({ updated: true });
 };
 
 module.exports = { createUser, logIn, getCurrentUser, updateProfile };

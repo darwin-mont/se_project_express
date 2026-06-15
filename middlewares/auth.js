@@ -17,7 +17,7 @@ const auth = (req, res, next) => {
   try {
     const payload = jwt.verify(token, JWT_SECRET);
     req.user = payload;
-    next();
+    return next();
   } catch (err) {
     if (err.name === "JsonWebTokenError") {
       return res.status(401).send({ message: "Invalid token" });
@@ -27,7 +27,6 @@ const auth = (req, res, next) => {
     }
     return res.status(401).send({ message: "Invalid or expired token" });
   }
-  return res;
 };
 
 module.exports = auth;
