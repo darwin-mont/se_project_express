@@ -11,10 +11,10 @@ const {
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send({ items }))
-    .catch((err) =>
+    .catch(() =>
       res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "Get items failed", error: err.message })
+        .send({ message: "Get items failed" })
     );
 };
 
@@ -29,14 +29,10 @@ const createItem = (req, res) => {
         err.name === "ValidationError" &&
         err.errors?.name?.kind === "minlength"
       ) {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: err.errors.name.message });
+        return res.status(BAD_REQUEST_STATUS_CODE).send({});
       }
       if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: err.message });
+        return res.status(BAD_REQUEST_STATUS_CODE).send({});
       }
       if (err.code === 11000) {
         return res
@@ -45,7 +41,7 @@ const createItem = (req, res) => {
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "Create item failed", error: err.message });
+        .send({ message: "Create item failed" });
     });
 };
 
@@ -93,7 +89,7 @@ const deleteItem = (req, res) => {
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "Delete item failed", error: err.message });
+        .send({ message: "Delete item failed" });
     });
   return res;
 };
@@ -120,7 +116,7 @@ const likeItem = (req, res) => {
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "Like failed", error: err.message });
+        .send({ message: "Like failed" });
     });
 };
 
@@ -146,7 +142,7 @@ const unlikeItem = (req, res) => {
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "Unlike failed", error: err.message });
+        .send({ message: "Unlike failed" });
     });
 };
 

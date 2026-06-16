@@ -1,17 +1,22 @@
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
+const { UNAUTHORIZED_STATUS_CODE } = require("../utils/errors");
 
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
-    return res.status(401).send({ message: "Authorization required" });
+    return res
+      .status(UNAUTHORIZED_STATUS_CODE)
+      .send({ message: "Authorization required" });
   }
 
   const token = authorization.replace("Bearer ", "");
 
   if (!token) {
-    return res.status(401).send({ message: "Authorization required" });
+    return res
+      .status(UNAUTHORIZED_STATUS_CODE)
+      .send({ message: "Authorization required" });
   }
 
   try {
@@ -20,12 +25,18 @@ const auth = (req, res, next) => {
     return next();
   } catch (err) {
     if (err.name === "JsonWebTokenError") {
-      return res.status(401).send({ message: "Invalid token" });
+      return res
+        .status(UNAUTHORIZED_STATUS_CODE)
+        .send({ message: "Invalid token" });
     }
     if (err.name === "TokenExpiredError") {
-      return res.status(401).send({ message: "Token expired" });
+      return res
+        .status(UNAUTHORIZED_STATUS_CODE)
+        .send({ message: "Token expired" });
     }
-    return res.status(401).send({ message: "Invalid or expired token" });
+    return res
+      .status(UNAUTHORIZED_STATUS_CODE)
+      .send({ message: "Invalid or expired token" });
   }
 };
 

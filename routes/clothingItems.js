@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const auth = require("../middlewares/auth");
 
 const {
   getItems,
@@ -8,7 +9,11 @@ const {
   unlikeItem,
 } = require("../controllers/clothingItems");
 
+// Public route-
 router.get("/", getItems);
+
+// Protected routes -
+router.use(auth);
 router.post("/", createItem);
 router.delete("/:itemId", deleteItem);
 router.put("/:itemId/likes", likeItem);

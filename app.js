@@ -1,15 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const clothingItemsRouter = require("./routes/clothingItems");
+const router = require("./routes/index");
 const {
-  createUser,
-  logIn,
-  getCurrentUser,
-  updateProfile,
-} = require("./controllers/users");
-
-const auth = require("./middlewares/auth");
+  NOT_FOUND_STATUS_CODE,
+  INTERNAL_SERVER_ERROR_STATUS_CODE,
+} = require("./utils/errors");
 
 const { PORT = 3001 } = process.env;
 
@@ -25,29 +21,23 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB error:", err));
 
-// PUBLIC ROUTES (no authentication)
-app.post("/signin", logIn);
-app.post("/signup", createUser);
-
-// PROTECTED ROUTES - AUTH MIDDLEWARE MUST COME BEFORE THESE
-app.use(auth);
-
-// User routes (protected)
-app.use("/items", clothingItemsRouter);
-app.get("/me", getCurrentUser);
-app.patch("/me", updateProfile);
+// ROUTES - Main route
+app.use("/", router);
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).send({ message: "Route not found" });
+  res.status(NOT_FOUND_STATUS_CODE).send({ message: "Route not found" });
 });
 
 // Global error handler
 app.use((err, req, res) => {
   console.error(err);
-  const { statusCode = 500, message } = err;
+  const { statusCode = INTERNAL_SERVER_ERROR_STATUS_CODE, message } = err;
   res.status(statusCode).send({
-    message: statusCode === 500 ? "An error occurred on the server" : message,
+    message:
+      statusCode === INTERNAL_SERVER_ERROR_STATUS_CODE
+        ? "An error occurred on the server"
+        : message,
   });
 });
 

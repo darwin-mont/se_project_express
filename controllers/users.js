@@ -46,7 +46,7 @@ const logIn = (req, res) => {
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "Login Failed", error: err.message });
+        .send({ message: "Login Failed" });
     });
 };
 
@@ -58,7 +58,7 @@ const createUser = (req, res) => {
       .send({ message: "Email, password, and name are required" });
   }
 
-  return User.create({ email, password, name, avatar })
+  return User.create({ email, name, avatar })
     .then((user) =>
       res.status(201).send({
         _id: user._id,
@@ -76,11 +76,11 @@ const createUser = (req, res) => {
       if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: err.message });
+          .send({ message: "Invalid data" });
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "create User Failed", error: err.message });
+        .send({ message: "create User Failed" });
     });
 };
 
@@ -107,7 +107,7 @@ const getCurrentUser = (req, res) => {
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "get User Failed", error: err.message });
+        .send({ message: "get User Failed" });
     });
 };
 
@@ -146,11 +146,11 @@ const updateProfile = (req, res) => {
       if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: err.message });
+          .send({ message: "Invalid data" });
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "update Profile Failed", error: err.message });
+        .send({ message: "update Profile Failed" });
     });
   return res.status(200).send({ updated: true });
 };
