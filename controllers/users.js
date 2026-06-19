@@ -1,5 +1,7 @@
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+
 const { JWT_SECRET } = require("../utils/config");
 
 const {
@@ -12,6 +14,7 @@ const {
 
 const logIn = (req, res) => {
   const { email, password } = req.body;
+
   if (!email || !password) {
     return res
       .status(BAD_REQUEST_STATUS_CODE)
@@ -52,21 +55,31 @@ const logIn = (req, res) => {
 
 const createUser = (req, res) => {
   const { email, password, name, avatar } = req.body;
+
   if (!email || !password || !name) {
     return res
       .status(BAD_REQUEST_STATUS_CODE)
       .send({ message: "Email, password, and name are required" });
   }
 
-  return User.create({ email, name, avatar })
-    .then((user) =>
+  return bcrypt
+    .hash(password, 10)
+    .then((hashedPassword) =>
+      User.create({
+        email,
+        name,
+        avatar,
+        password: hashedPassword,
+      })
+    )
+    .then((user) => {
       res.status(201).send({
         _id: user._id,
         email: user.email,
         name: user.name,
         avatar: user.avatar,
-      })
-    )
+      });
+    })
     .catch((err) => {
       if (err.code === 11000) {
         return res
@@ -107,7 +120,7 @@ const getCurrentUser = (req, res) => {
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "get User Failed" });
+        .send({ message: "Get User Failed" });
     });
 };
 

@@ -2,10 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const router = require("./routes/index");
-const {
-  NOT_FOUND_STATUS_CODE,
-  INTERNAL_SERVER_ERROR_STATUS_CODE,
-} = require("./utils/errors");
+const { INTERNAL_SERVER_ERROR_STATUS_CODE } = require("./utils/errors");
 
 const { PORT = 3001 } = process.env;
 
@@ -23,11 +20,6 @@ mongoose
 
 // ROUTES - Main route
 app.use("/", router);
-
-// 404 handler
-app.use((req, res) => {
-  res.status(NOT_FOUND_STATUS_CODE).send({ message: "Route not found" });
-});
 
 // Global error handler
 app.use((err, req, res) => {

@@ -3,7 +3,6 @@ const {
   NOT_FOUND_STATUS_CODE,
   INTERNAL_SERVER_ERROR_STATUS_CODE,
   BAD_REQUEST_STATUS_CODE,
-  CONFLICT_STATUS_CODE,
   FORBIDDEN_STATUS_CODE,
   UNAUTHORIZED_STATUS_CODE,
 } = require("../utils/errors");
@@ -25,20 +24,12 @@ const createItem = (req, res) => {
   ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => res.status(201).send({ data: item }))
     .catch((err) => {
-      if (
-        err.name === "ValidationError" &&
-        err.errors?.name?.kind === "minlength"
-      ) {
-        return res.status(BAD_REQUEST_STATUS_CODE).send({});
-      }
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST_STATUS_CODE).send({});
-      }
-      if (err.code === 11000) {
         return res
-          .status(CONFLICT_STATUS_CODE)
-          .send({ message: "Item with this name already exists" });
+          .status(BAD_REQUEST_STATUS_CODE)
+          .send({ message: "Invalid data provided" });
       }
+
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
         .send({ message: "Create item failed" });
