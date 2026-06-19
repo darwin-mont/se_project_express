@@ -89,7 +89,7 @@ const createUser = (req, res) => {
       if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: "Invalid data" });
+          .send({ message: err.message });
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
@@ -132,7 +132,7 @@ const updateProfile = (req, res) => {
       .status(BAD_REQUEST_STATUS_CODE)
       .send({ message: "At least one field (name or avatar) is required" });
   }
-  User.findByIdAndUpdate(
+  return User.findByIdAndUpdate(
     req.user._id,
     { name, avatar },
     { new: true, runValidators: true }
@@ -159,13 +159,12 @@ const updateProfile = (req, res) => {
       if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: "Invalid data" });
+          .send({ message: err.message });
       }
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
         .send({ message: "update Profile Failed" });
     });
-  return res.status(200).send({ updated: true });
 };
 
 module.exports = { createUser, logIn, getCurrentUser, updateProfile };
