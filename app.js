@@ -15,7 +15,28 @@ const errorHandler = require("./middlewares/errorHandler");
 
 // === MIDDLEWARES === //
 
-app.use(cors({}));
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://watawe.unibutton.com",
+  "https://www.watawe.unibutton.com",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        console.warn("Origin not allowed by CORS:", origin);
+        callback(null, true); // Temporarily allow all for testing
+        // callback(new Error('Not allowed by CORS')); // Enable for production
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // === LOGGERs === //
@@ -23,10 +44,12 @@ app.use(requestLogger);
 
 // === MongoDB connection === //
 
+const DB_URL = process.env.DATABASE_URL || "mongodb://127.0.0.1:27017/wtwr_db";
+
 mongoose
-  .connect("mongodb://127.0.0.1:27017/wtwr_db")
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("MongoDB error:", err));
+  .connect(DB_URL)
+  .then(() => console.log(" Connected to MongoDB"))
+  .catch((err) => console.error(" MongoDB error:", err));
 
 // === ROUTES - Main route === //
 app.use("/", router);
@@ -52,4 +75,5 @@ app.use(errorHandler);
 // === START SERVER === //
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
 });
