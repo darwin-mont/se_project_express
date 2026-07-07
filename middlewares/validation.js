@@ -25,7 +25,7 @@ const validateClothingItem = celebrate({
       "any.only": "Weather must be one of: hot, warm, cold",
       "any.required": "Weather is required",
     }),
-    imageUrl: Joi.string().custom(validateUrl).required().messages({
+    imageUrl: Joi.string().custom(validateURL).required().messages({
       "string.empty": 'the "imageUrl" field must be filled in',
       "string.uri": 'the "imageUrl" must be a valid URL',
     }),
