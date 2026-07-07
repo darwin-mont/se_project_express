@@ -5,20 +5,18 @@ const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
 
 const {
-  NOT_FOUND_STATUS_CODE,
-  INTERNAL_SERVER_ERROR_STATUS_CODE,
-  BAD_REQUEST_STATUS_CODE,
-  CONFLICT_STATUS_CODE,
-  UNAUTHORIZED_STATUS_CODE,
+  BadRequestError,
+  UnauthorizedError,
+  NotFoundError,
+  ConflictError,
 } = require("../utils/errors");
 
-const logIn = (req, res) => {
+// === LOGIN === //
+const logIn = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res
-      .status(BAD_REQUEST_STATUS_CODE)
-      .send({ message: "Email and password are required" });
+    return next(new BadRequestError("Email and Password are required"));
   }
 
   return User.findUserByCredentials(email, password)
@@ -38,28 +36,21 @@ const logIn = (req, res) => {
     })
     .catch((err) => {
       if (err.message === "Incorrect email or password") {
-        return res
-          .status(UNAUTHORIZED_STATUS_CODE)
-          .send({ message: err.message });
+        return next(new UnauthorizedError(err.message));
       }
       if (err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: "Invalid user ID format" });
+        return next(new BadRequestError("Invaid user ID format"));
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "Login Failed" });
+      next(err);
     });
 };
 
+// === CREATE USER (REGISTER) === //
 const createUser = (req, res) => {
   const { email, password, name, avatar } = req.body;
 
   if (!email || !password || !name) {
-    return res
-      .status(BAD_REQUEST_STATUS_CODE)
-      .send({ message: "Email, password, and name are required" });
+    return next(new BadRequestError("Email, password, and name are required"));
   }
 
   return bcrypt
@@ -82,28 +73,21 @@ const createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        return res
-          .status(CONFLICT_STATUS_CODE)
-          .send({ message: "User with this email already exists" });
+        return next(new ConflictError("User with this email already exists"));
       }
       if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: err.message });
+        return next(new BadRequestError(err.message));
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "create User Failed" });
+      next(err);
     });
 };
 
-const getCurrentUser = (req, res) => {
+// === GET CURRENT USER === //
+const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        return res
-          .status(NOT_FOUND_STATUS_CODE)
-          .send({ message: "User not found" });
+        return next(new NotFoundError("User not found"));
       }
       return res.status(200).send({
         _id: user._id,
@@ -114,23 +98,18 @@ const getCurrentUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: "Invalid user ID format" });
+        return next(new BadRequestError("Invalid user ID format"));
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "Get User Failed" });
+      next(err);
     });
 };
 
-const updateProfile = (req, res) => {
+// === UPDATE PROFILE === ///
+const updateProfile = (req, res, next) => {
   const { name, avatar } = req.body;
 
   if (!name && !avatar) {
-    return res
-      .status(BAD_REQUEST_STATUS_CODE)
-      .send({ message: "At least one field (name or avatar) is required" });
+    return next(new "At least one field (name or avatar) is required"());
   }
   return User.findByIdAndUpdate(
     req.user._id,
@@ -139,9 +118,7 @@ const updateProfile = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        return res
-          .status(NOT_FOUND_STATUS_CODE)
-          .send({ message: "User not found" });
+        return next(new NotFoundError("User not found"));
       }
       return res.status(200).send({
         _id: user._id,
@@ -152,18 +129,12 @@ const updateProfile = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: "Invalid user ID format" });
+        return next(new BadRequestError("Invalid user ID format"));
       }
       if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: err.message });
+        return next(new BadRequestError(err.message));
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: "update Profile Failed" });
+      next(err);
     });
 };
 

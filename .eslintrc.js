@@ -20,6 +20,10 @@ module.exports = {
     sourceType: "module",
   },
   rules: {
+    // Allow _id (MongoDB convention)
     "no-underscore-dangle": ["error", { allow: ["_id"] }],
+
+    // Ignore 'next' in Express middleware and variables starting with '_'
+    "no-unused-vars": ["error", { argsIgnorePattern: "next" }],
   },
 };
