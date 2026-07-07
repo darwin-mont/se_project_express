@@ -39,14 +39,14 @@ const logIn = (req, res, next) => {
         return next(new UnauthorizedError(err.message));
       }
       if (err.name === "CastError") {
-        return next(new BadRequestError("Invaid user ID format"));
+        return next(new BadRequestError("Invalid user ID format"));
       }
-      next(err);
+      return next(err);
     });
 };
 
 // === CREATE USER (REGISTER) === //
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { email, password, name, avatar } = req.body;
 
   if (!email || !password || !name) {
@@ -63,14 +63,14 @@ const createUser = (req, res) => {
         password: hashedPassword,
       })
     )
-    .then((user) => {
+    .then((user) =>
       res.status(201).send({
         _id: user._id,
         email: user.email,
         name: user.name,
         avatar: user.avatar,
-      });
-    })
+      })
+    )
     .catch((err) => {
       if (err.code === 11000) {
         return next(new ConflictError("User with this email already exists"));
@@ -78,13 +78,12 @@ const createUser = (req, res) => {
       if (err.name === "ValidationError") {
         return next(new BadRequestError(err.message));
       }
-      next(err);
+      return next(err);
     });
 };
 
 // === GET CURRENT USER === //
-const getCurrentUser = (req, res, next) => {
-  User.findById(req.user._id)
+const getCurrentUser = (req, res, next) => User.findById(req.user._id)
     .then((user) => {
       if (!user) {
         return next(new NotFoundError("User not found"));
@@ -100,33 +99,33 @@ const getCurrentUser = (req, res, next) => {
       if (err.name === "CastError") {
         return next(new BadRequestError("Invalid user ID format"));
       }
-      next(err);
+      return next(err);
     });
-};
 
 // === UPDATE PROFILE === ///
 const updateProfile = (req, res, next) => {
   const { name, avatar } = req.body;
 
   if (!name && !avatar) {
-    return next(new "At least one field (name or avatar) is required"());
+    return next(
+      new BadRequestError("At least one field (name or avatar) is required")
+    );
   }
   return User.findByIdAndUpdate(
     req.user._id,
     { name, avatar },
     { new: true, runValidators: true }
   )
-    .then((user) => {
-      if (!user) {
-        return next(new NotFoundError("User not found"));
-      }
-      return res.status(200).send({
-        _id: user._id,
-        email: user.email,
-        name: user.name,
-        avatar: user.avatar,
-      });
-    })
+    .then((user) =>
+      !user
+        ? next(new NotFoundError("User not found"))
+        : res.status(200).send({
+            _id: user._id,
+            email: user.email,
+            name: user.name,
+            avatar: user.avatar,
+          })
+    )
     .catch((err) => {
       if (err.name === "CastError") {
         return next(new BadRequestError("Invalid user ID format"));
@@ -134,7 +133,7 @@ const updateProfile = (req, res, next) => {
       if (err.name === "ValidationError") {
         return next(new BadRequestError(err.message));
       }
-      next(err);
+      return next(err);
     });
 };
 

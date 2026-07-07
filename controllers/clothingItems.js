@@ -24,7 +24,7 @@ const createItem = (req, res, next) => {
       if (err.name === "ValidationError") {
         return next(new BadRequestError("Invalid data provided"));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -42,7 +42,7 @@ const deleteItem = (req, res, next) => {
     return next(new BadRequestError("Item ID is required"));
   }
 
-  ClothingItem.findById(itemId)
+  return ClothingItem.findById(itemId)
     .then((item) => {
       if (!item) {
         return next(new NotFoundError("Item not found"));
@@ -62,51 +62,45 @@ const deleteItem = (req, res, next) => {
       if (err.name === "CastError") {
         return next(new BadRequestError("Invalid item ID format"));
       }
-      next(err);
+      return next(err);
     });
 };
 
 // === LIKE ITEM === //
-const likeItem = (req, res, next) => {
-  ClothingItem.findByIdAndUpdate(
+const likeItem = (req, res, next) => ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } },
     { new: true }
   )
-    .then((item) => {
-      if (!item) {
-        return next(new NotFoundError("Item not found"));
-      }
-      return res.status(200).send({ data: item });
-    })
+    .then((item) =>
+      !item
+        ? next(new NotFoundError("Item not found"))
+        : res.status(200).send({ data: item })
+    )
     .catch((err) => {
       if (err.name === "CastError") {
         return next(new BadRequestError("Invalid item ID format"));
       }
-      next(err);
+      return next(err);
     });
-};
 
 // === UNLIKE ITEM === //
-const unlikeItem = (req, res, next) => {
-  ClothingItem.findByIdAndUpdate(
+const unlikeItem = (req, res, next) => ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } },
     { new: true }
   )
-    .then((item) => {
-      if (!item) {
-        return next(new NotFoundError("Item not found"));
-      }
-      return res.status(200).send({ data: item });
-    })
+    .then((item) =>
+      !item
+        ? next(new NotFoundError("Item not found"))
+        : res.status(200).send({ data: item })
+    )
     .catch((err) => {
       if (err.name === "CastError") {
         return next(new BadRequestError("Invalid item ID format"));
       }
-      next(err);
+      return next(err);
     });
-};
 
 module.exports = {
   getItems,

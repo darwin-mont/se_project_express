@@ -1,4 +1,5 @@
 // utils/errors.js
+/* eslint-disable max-classes-per-file */
 
 // ========== HTTP STATUS CODE CONSTANTS ==========
 const BAD_REQUEST_STATUS_CODE = 400;
