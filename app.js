@@ -1,9 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const router = require("./routes/index");
-const { INTERNAL_SERVER_ERROR_STATUS_CODE } = require("./utils/errors");
 const { errors } = require("celebrate");
+const router = require("./routes/index");
+
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const { PORT = 3001 } = process.env;
