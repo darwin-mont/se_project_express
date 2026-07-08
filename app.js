@@ -16,7 +16,7 @@ const errorHandler = require("./middlewares/errorHandler");
 // === MIDDLEWARES === //
 
 const allowedOrigins = [
-  "http://localhost:3000",
+  "http://localhost:3001",
   "https://watawe.unibutton.com",
   "https://www.watawe.unibutton.com",
 ];
