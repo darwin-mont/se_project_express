@@ -51,6 +51,13 @@ mongoose
   .then(() => console.log(" Connected to MongoDB"))
   .catch((err) => console.error(" MongoDB error:", err));
 
+// === CRASH TEST ENDPOINT === //
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
+
 // === ROUTES - Main route === //
 app.use("/", router);
 

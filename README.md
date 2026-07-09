@@ -1,30 +1,23 @@
 # WTWR (What to Wear?):
 
-<h2> WTWR - Back End </h2>
+<h2> WTWR  </h2>
+Project created to learn and practice backend development. its a nice project to build a back bone for the frontend.
 
-The back-end project is to create a server for the WTWr application.
+## Project's Domain Name
 
-- It is focused on the implementation and setup of the back-end with a DB and testing enviroment for the WTWR APP.
-- To create the DB, we implemented MongoDB.
-- Technology implemented with mongoose to
-  create the database as learned in the
-  currrent sprint.
+watawe.unibutton.com
 
-Used POSTMAN to test APIS.
+[link of app] (watawe.unibutton.com)
 
-Managed to test the DB on a localhost server and remote.
+## Frontend - GitHub repo
 
-We now have implemented authentication and authorization.
+[GitHub Repo](https://github.com/darwin-mont/se_project_react.git)
 
-The features have now being completed, improvements can be added later on.
+## Backend - GitHub repo
 
-## Running the Project
+[GitHub Repo](https://github.com/darwin-mont/se_project_express.git)
 
-`npm run start` — to launch the server
+## Project 15 - Deployment Video
 
-`npm run dev` — to launch the server with the hot reload feature
-
-## Project pitch Video
-
-You can check on [this video](https://drive.google.com/file/d/1oIE_9onvwesy65qaN3clMOhSUX2EqmZW/view?usp=drivesdk),
-where I describe my project and some challenges I faced while building it.
+You can check on [this video](https://drive.google.com/file/d/1Zfa5mzSObAT1vRHkoKtjTb9oAqkq79uR/view?usp=sharing)
+where I describe the project and challenges
