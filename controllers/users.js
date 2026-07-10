@@ -83,7 +83,8 @@ const createUser = (req, res, next) => {
 };
 
 // === GET CURRENT USER === //
-const getCurrentUser = (req, res, next) => User.findById(req.user._id)
+const getCurrentUser = (req, res, next) =>
+  User.findById(req.user._id)
     .then((user) => {
       if (!user) {
         return next(new NotFoundError("User not found"));
@@ -116,16 +117,17 @@ const updateProfile = (req, res, next) => {
     { name, avatar },
     { new: true, runValidators: true }
   )
-    .then((user) =>
-      !user
-        ? next(new NotFoundError("User not found"))
-        : res.status(200).send({
-            _id: user._id,
-            email: user.email,
-            name: user.name,
-            avatar: user.avatar,
-          })
-    )
+    .then((user) => {
+      if (!user) {
+        return next(new NotFoundError("User not found"));
+      }
+      return res.status(200).send({
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar,
+      });
+    })
     .catch((err) => {
       if (err.name === "CastError") {
         return next(new BadRequestError("Invalid user ID format"));

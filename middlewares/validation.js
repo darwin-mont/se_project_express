@@ -33,7 +33,7 @@ const validateClothingItem = celebrate({
 });
 // === USER REGISTRATION VALIDATION === //
 const validateUserRegistration = celebrate({
-  bady: Joi.object().keys({
+  body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required().messages({
       "string.base": "Name must be a string",
       "string.empty": "Name is required",
@@ -118,46 +118,6 @@ const validateId = celebrate({
       }),
   }),
 });
-const validateUserId = celebrate({
-  params: Joi.object().keys({
-    userId: Joi.string()
-      .custom((value, helpers) => {
-        if (!validator.isMongoId(value)) {
-          return helpers.error("string.pattern.base");
-        }
-        return value;
-      })
-      .required()
-      .messages({
-        "string.base": "User ID must be a string",
-        "string.empty": "User ID is required",
-        "string.pattern.base":
-          "User ID must be a valid 24-character hexadecimal string",
-        "any.required": "User ID is required",
-      }),
-  }),
-});
-
-// === REQUEST ID VALIDATION (for itemId) === //
-const validateRequestId = celebrate({
-  params: Joi.object().keys({
-    id: Joi.string()
-      .custom((value, helpers) => {
-        if (!validator.isMongoId(value)) {
-          return helpers.error("string.pattern.base");
-        }
-        return value;
-      })
-      .required()
-      .messages({
-        "string.base": "ID must be a string",
-        "string.empty": "ID is required",
-        "string.pattern.base":
-          "ID must be a valid 24-character hexadecimal string",
-        "any.required": "ID is required",
-      }),
-  }),
-});
 
 // ========== EXPORTS ==========
 module.exports = {
@@ -166,6 +126,4 @@ module.exports = {
   validateUserLogin,
   validateUpdateProfile,
   validateId,
-  validateUserId,
-  validateRequestId,
 };
